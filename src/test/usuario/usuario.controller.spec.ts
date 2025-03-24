@@ -1,28 +1,31 @@
-import request from 'supertest';
+import * as request from 'supertest';
 import {
   describe, expect, it, jest,
 } from '@jest/globals';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from '../../app.module';
+import { response } from 'express';
 
-let app: INestApplication;
-beforeAll(async () => {
-  const moduleFixure: TestingModule = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
 
-  app = moduleFixure.createNestApplication();
-  await app.init();
-});
+describe('Teste rotas UsuarioController', () => {
 
-afterAll(async () => {
-    await app.close();
-  });
+    let app: INestApplication;
+    beforeAll(async () => {
+    const moduleFixure: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+    }).compile();
 
-describe('Teste rota POST em /usuarios', () => {
-    it('Deve criar um usuário.', async () => {
-        await request(app)
+    app = moduleFixure.createNestApplication();
+        await app.init();
+    });
+
+    afterAll(async () => {
+        await app.close();
+    });
+
+    it('/usuarios POST - Deve criar um usuário.', async() => {
+        await request(app.getHttpServer())
             .post('/usuarios')
             .send({
                 nome: 'Nome usuário',
@@ -31,11 +34,9 @@ describe('Teste rota POST em /usuarios', () => {
             })
             .expect(201);
     })
-})
 
-describe('Teste rota GET em /usuarios', () => {
-    it('Deve listar os usuários.', async() =>{
-        await request(app)
+    it('/usuarios GET - Deve listar os usuários.', async() =>{
+        await request(app.getHttpServer())
             .get('/usuarios')
             .expect(200);
     })
